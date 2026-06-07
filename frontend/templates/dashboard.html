@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Road Map AI</title>
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<link rel="stylesheet"
+href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+</head>
+
+<body>
+
+<header class="navbar">
+
+<h1>🚗 Road Map AI</h1>
+
+</header>
+
+<section class="search-section">
+
+<input
+type="text"
+id="destination"
+placeholder="Search Destination">
+
+<button id="routeBtn">
+
+Find Safest Route
+
+</button>
+
+</section>
+
+<div id="map"></div>
+
+<section class="info-panel">
+
+<div class="card">
+
+<h3>Distance</h3>
+
+<p id="distance">--</p>
+
+</div>
+
+<div class="card">
+
+<h3>ETA</h3>
+
+<p id="eta">--</p>
+
+</div>
+
+<div class="card">
+
+<h3>Safety Score</h3>
+
+<p id="score">--</p>
+
+</div>
+
+<div class="card">
+
+<h3>Risk Level</h3>
+
+<p id="risk">--</p>
+
+</div>
+
+</section>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="{{ url_for('static', filename='js/map.js') }}"></script>
+
+</body>
+</html>
