@@ -4,19 +4,46 @@ from backend.services.route_service import generate_route
 
 def get_route(data):
 
-    source = data.get("source")
-    destination = data.get("destination")
+    source_lat = data.get(
+        "source_lat"
+    )
 
-    if not source or not destination:
+    source_lon = data.get(
+        "source_lon"
+    )
+
+    destination_lat = data.get(
+        "destination_lat"
+    )
+
+    destination_lon = data.get(
+        "destination_lon"
+    )
+
+    if (
+        source_lat is None or
+        source_lon is None or
+        destination_lat is None or
+        destination_lon is None
+    ):
 
         return jsonify({
+
             "success": False,
-            "message": "Source and Destination are required"
+
+            "message":
+            "Coordinates are required"
+
         }), 400
 
     result = generate_route(
-        source,
-        destination
+
+        source_lat,
+        source_lon,
+
+        destination_lat,
+        destination_lon
+
     )
 
     return jsonify(result)

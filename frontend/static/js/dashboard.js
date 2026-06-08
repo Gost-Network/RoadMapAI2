@@ -1,30 +1,14 @@
 console.log("Dashboard Loaded");
 
-document
-.getElementById("routeBtn")
-.addEventListener("click", function(){
+// Dashboard UI Ready
 
-    let source =
-    document.getElementById("source").value;
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-    let destination =
-    document.getElementById("destination").value;
-
-    if(
-        source === "" ||
-        destination === ""
-    ){
-
-        alert(
-            "Please Enter Source And Destination"
+        console.log(
+            "Road Map AI Dashboard Ready"
         );
 
-        return;
     }
-
-    console.log(
-        source,
-        destination
-    );
-
-});
+);

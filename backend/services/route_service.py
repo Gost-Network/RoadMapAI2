@@ -70,12 +70,25 @@ def generate_route(
 
             })
 
+        distance_km = round(
+            route_length / 1000,
+            2
+        )
+
+        eta_minutes = round(
+            (distance_km / 40) * 60,
+            0
+        )
+
         return {
 
             "success": True,
 
             "distance_km":
-            round(route_length / 1000, 2),
+            distance_km,
+
+            "eta_minutes":
+            eta_minutes,
 
             "route":
             coordinates
@@ -84,10 +97,16 @@ def generate_route(
 
     except Exception as e:
 
+        print(
+            "ROUTE ERROR:",
+            e
+        )
+
         return {
 
             "success": False,
 
-            "message": str(e)
+            "message":
+            str(e)
 
         }

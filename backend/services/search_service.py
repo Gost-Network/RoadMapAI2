@@ -8,42 +8,56 @@ def get_location(place):
 
     try:
 
-        search_query = (
-            f"{place}, Palghar, Maharashtra, India"
-        )
-
         location = geolocator.geocode(
-            search_query
+            place
         )
 
         print(
-            "SEARCH QUERY:",
-            search_query
+            "SEARCH:",
+            place
         )
 
         print(
-            "SEARCH RESULT:",
+            "RESULT:",
             location
         )
 
         if location:
 
             return {
+
                 "success": True,
-                "place": place,
-                "latitude": location.latitude,
-                "longitude": location.longitude,
-                "address": location.address
+
+                "place":
+                place,
+
+                "latitude":
+                location.latitude,
+
+                "longitude":
+                location.longitude,
+
+                "address":
+                location.address
+
             }
 
         return {
+
             "success": False,
-            "message": "Location Not Found"
+
+            "message":
+            "Location Not Found"
+
         }
 
     except Exception as e:
 
         return {
+
             "success": False,
-            "message": str(e)
+
+            "message":
+            str(e)
+
         }
