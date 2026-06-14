@@ -22,32 +22,55 @@ let routeLine = null;
 
 if (navigator.geolocation) {
 
-    navigator.geolocation.getCurrentPosition(
+    navigator.geolocation.watchPosition(
 
         function(position) {
 
-            currentLat = position.coords.latitude;
-            currentLon = position.coords.longitude;
+            currentLat =
+                position.coords.latitude;
+
+            currentLon =
+                position.coords.longitude;
 
             console.log(
-                "GPS SUCCESS:",
+                "LIVE GPS:",
                 currentLat,
                 currentLon
             );
 
+            if (currentMarker) {
+
+                currentMarker.setLatLng(
+                    [
+                        currentLat,
+                        currentLon
+                    ]
+                );
+
+            } else {
+
+                currentMarker =
+                    L.marker(
+                        [
+                            currentLat,
+                            currentLon
+                        ]
+                    )
+                    .addTo(map)
+                    .bindPopup(
+                        "📍 Current Location"
+                    )
+                    .openPopup();
+
+            }
+
             map.setView(
-                [currentLat, currentLon],
+                [
+                    currentLat,
+                    currentLon
+                ],
                 15
             );
-
-            currentMarker = L.marker(
-                [currentLat, currentLon]
-            )
-            .addTo(map)
-            .bindPopup(
-                "📍 Current Location"
-            )
-            .openPopup();
 
         },
 
@@ -56,11 +79,6 @@ if (navigator.geolocation) {
             console.log(
                 "GPS ERROR:",
                 error
-            );
-
-            alert(
-                "GPS Error: " +
-                error.message
             );
 
         },
@@ -172,22 +190,98 @@ async function findRoute() {
             );
 
         }
+if (routeLine) {
 
-        routeLine =
-            L.polyline(
-                [
-                    [currentLat, currentLon],
-                    [destLat, destLon]
-                ],
-                {
-                    weight: 5
-                }
-            )
-            .addTo(map);
+    map.removeLayer(
+        routeLine
+    );
 
-        map.fitBounds(
-            routeLine.getBounds()
+}
+
+const routeResponse =
+    await fetch(
+        "/route",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+
+                source_lat:
+                currentLat,
+
+                source_lon:
+                currentLon,
+
+                destination_lat:
+                destLat,
+
+                destination_lon:
+                destLon
+
+            })
+        }
+    );
+
+const routeData =
+    await routeResponse.json();
+
+console.log(
+    "ROUTE DATA:",
+    routeData
+);
+
+if (
+    routeData.success
+) {
+
+    const routeCoordinates =
+        routeData.route.map(
+            point => [
+                point.lat,
+                point.lon
+            ]
         );
+        
+        routeLine =
+        L.polyline(
+            routeCoordinates,
+            {
+                weight: 5
+            }
+        )
+        .addTo(map);
+
+    map.fitBounds(
+        routeLine.getBounds()
+    );
+
+    document.getElementById(
+        "distance"
+    ).innerText =
+        routeData.distance_km +
+        " KM";
+
+    document.getElementById(
+        "eta"
+    ).innerText =
+        routeData.eta_minutes +
+        " Min";
+
+}
+else {
+
+    alert(
+        routeData.message
+    );
+
+    return;
+
+}
 
         const distance =
             (
@@ -284,10 +378,6 @@ async function findRoute() {
             );
 
         }
-
-        alert(
-            "Route Generated Successfully"
-        );
 
     }
 

@@ -1,5 +1,6 @@
-import osmnx as ox
-import networkx as nx
+import requests
+
+API_KEY = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImUyMjRhYzJjZDAxZTQzYWU5N2NlOTIyNmRmM2ExNzgwIiwiaCI6Im11cm11cjY0In0="
 
 
 def generate_route(
@@ -11,73 +12,112 @@ def generate_route(
 
     try:
 
-        center_lat = (
-            source_lat +
-            destination_lat
-        ) / 2
+        headers = {
 
-        center_lon = (
-            source_lon +
-            destination_lon
-        ) / 2
+            "Authorization":
+            API_KEY,
 
-        graph = ox.graph_from_point(
-            (
-                center_lat,
-                center_lon
-            ),
-            dist=30000,
-            network_type="drive"
+            "Content-Type":
+            "application/json"
+
+        }
+
+        body = {
+
+            "coordinates": [
+
+                [
+                    float(source_lon),
+                    float(source_lat)
+                ],
+
+                [
+                    float(destination_lon),
+                    float(destination_lat)
+                ]
+
+            ]
+
+        }
+
+        response = requests.post(
+
+            "https://api.openrouteservice.org/v2/directions/driving-car/geojson",
+
+            json=body,
+
+            headers=headers,
+
+            timeout=20
+
         )
 
-        origin_node = ox.distance.nearest_nodes(
-            graph,
-            source_lon,
-            source_lat
+        data = response.json()
+
+        print(
+            "ROUTE RESPONSE:",
+            data
         )
 
-        destination_node = ox.distance.nearest_nodes(
-            graph,
-            destination_lon,
-            destination_lat
-        )
+        if "features" not in data:
 
-        shortest_route = nx.shortest_path(
-            graph,
-            origin_node,
-            destination_node,
-            weight="length"
-        )
+            return {
 
-        route_length = nx.shortest_path_length(
-            graph,
-            origin_node,
-            destination_node,
-            weight="length"
-        )
+                "success": False,
 
-        coordinates = []
+                "message":
+                str(data)
 
-        for node in shortest_route:
+            }
 
-            coordinates.append({
+        geometry = data[
+            "features"
+        ][0][
+            "geometry"
+        ][
+            "coordinates"
+        ]
+
+        route_coordinates = []
+
+        for point in geometry:
+
+            route_coordinates.append({
 
                 "lat":
-                graph.nodes[node]["y"],
+                point[1],
 
                 "lon":
-                graph.nodes[node]["x"]
+                point[0]
 
             })
 
+        summary = data[
+            "features"
+        ][0][
+            "properties"
+        ][
+            "summary"
+        ]
+
         distance_km = round(
-            route_length / 1000,
+
+            summary[
+                "distance"
+            ] / 1000,
+
             2
+
         )
 
         eta_minutes = round(
-            (distance_km / 40) * 60,
+
+            summary[
+                "duration"
+            ] / 60,
+
             0
+
         )
 
         return {
@@ -91,7 +131,7 @@ def generate_route(
             eta_minutes,
 
             "route":
-            coordinates
+            route_coordinates
 
         }
 
