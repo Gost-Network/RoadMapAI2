@@ -231,9 +231,13 @@ const routeData =
     await routeResponse.json();
 
 console.log(
-    "ROUTE DATA:",
-    routeData
-);
+    JSON.stringify(
+        routeData,
+        null,
+        2
+    )
+)
+    
 
 if (
     routeData.success
@@ -271,6 +275,80 @@ if (
     ).innerText =
         routeData.eta_minutes +
         " Min";
+        if (routeData.instructions) {
+
+    let html = "";
+
+    routeData.instructions.forEach(
+
+        function(step, index) {
+
+            let distanceText = "";
+
+if (step.distance >= 1000) {
+
+    distanceText =
+    (step.distance / 1000).toFixed(2)
+    + " km";
+
+}
+else {
+
+    distanceText =
+    step.distance +
+    " m";
+
+}
+
+if (step.distance === 0) {
+
+    distanceText =
+    "Destination";
+
+}
+
+html +=
+"<p><b>Step " +
+(index + 1) +
+":</b> " +
+step.instruction +
+" (" +
+distanceText +
+")</p>";
+
+        }
+
+    );
+
+    document.getElementById(
+        "instructions"
+    ).innerHTML = html;
+    if (
+    routeData.instructions &&
+    routeData.instructions.length > 0
+) {
+
+    const speech =
+        new SpeechSynthesisUtterance(
+
+            "Navigation started. " +
+
+            routeData.instructions[0]
+            .instruction
+
+        );
+
+    speech.lang = "en-IN";
+
+    speech.rate = 1;
+
+    window.speechSynthesis.speak(
+        speech
+    );
+
+}
+
+}
 
 }
 else {
@@ -283,40 +361,8 @@ else {
 
 }
 
-        const distance =
-            (
-                Math.sqrt(
-                    Math.pow(
-                        destLat -
-                        currentLat,
-                        2
-                    ) +
-                    Math.pow(
-                        destLon -
-                        currentLon,
-                        2
-                    )
-                ) * 111
-            ).toFixed(2);
-
-        const eta =
-            Math.round(
-                (
-                    parseFloat(
-                        distance
-                    ) / 40
-                ) * 60
-            );
-
-        document.getElementById(
-            "distance"
-        ).innerText =
-            distance + " KM";
-
-        document.getElementById(
-            "eta"
-        ).innerText =
-            eta + " Min";
+       
+        
 
         try {
 

@@ -70,6 +70,33 @@ def generate_route(
 
             }
 
+        steps = data[
+            "features"
+        ][0][
+            "properties"
+        ][
+            "segments"
+        ][0][
+            "steps"
+        ]
+
+        instructions = []
+
+        for step in steps:
+
+            instructions.append({
+
+                "instruction":
+                step["instruction"],
+
+                "distance":
+                round(
+                    step["distance"],
+                    0
+                )
+
+            })
+
         geometry = data[
             "features"
         ][0][
@@ -131,7 +158,10 @@ def generate_route(
             eta_minutes,
 
             "route":
-            route_coordinates
+            route_coordinates,
+
+            "instructions":
+            instructions
 
         }
 

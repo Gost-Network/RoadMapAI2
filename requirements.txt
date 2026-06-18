@@ -1,0 +1,10 @@
+flask
+pandas
+scikit-learn
+joblib
+requests
+geopy
+openrouteservice
+gunicorn
+osmnx
+networkx
